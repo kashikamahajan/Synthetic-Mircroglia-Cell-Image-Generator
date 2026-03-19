@@ -30,8 +30,8 @@ def convolution(img):
     psf_image = exposure.rescale_intensity(psf_image, out_range = (0,1))
 
     convolved_img = ndimage.convolve(image_array, psf_image, mode='nearest', cval=0.0)
-
-    tifffile.imwrite('/Users/kashika/Desktop/Haynes_Lab/final_pipeline/conv_img.tif', convolved_img)
+    conv_img_dir_path = PATH_TO_CONV_IMGS / f"conv_img_{i:04d}.tif"
+    tifffile.imwrite(conv_img_dir_path, convolved_img)
 
 def imagej_filtering(img):
     print("hi")
@@ -50,17 +50,4 @@ images_dir_path, labels_dir_path = generate_multicell_dataset(
         random_seed=42  
     )
 
-#for img in images_dir_path:
 
-
-image_array = tifffile.imread('/Users/kashika/Desktop/Haynes_Lab/final_pipeline/img.tif')
-image_array = image_array.astype("float32")
-image_array= exposure.rescale_intensity(image_array, out_range=(0,1))
-
-psf_image = tifffile.imread('/Users/kashika/Desktop/Haynes_Lab/SingleBeadCrop_776x834y195z_60_60_56_2.5umZ.tif')
-psf_image = psf_image.astype("float32")
-psf_image = exposure.rescale_intensity(psf_image, out_range = (0,1))
-
-convolved_img = ndimage.convolve(image_array, psf_image, mode='nearest', cval=0.0)
-
-tifffile.imwrite('/Users/kashika/Desktop/Haynes_Lab/final_pipeline/conv_img.tif', convolved_img)

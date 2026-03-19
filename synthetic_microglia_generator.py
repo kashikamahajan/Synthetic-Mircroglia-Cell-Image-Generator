@@ -4,6 +4,7 @@ from scipy import ndimage
 from scipy.ndimage import map_coordinates
 from pathlib import Path
 
+
 def random_rotation_3d(volume):
     """Apply random 3D rotation with optimized parameters."""
     angle_x = np.random.uniform(0, 360)
@@ -189,6 +190,8 @@ def generate_multicell_dataset(input_path,
     Creates two subdirectories:
         - images/: synthetic microscopy images
         - labels/: corresponding ground truth segmentation labels
+
+    Returns the paths to directories created
     """
     
     if random_seed is not None:
@@ -209,7 +212,7 @@ def generate_multicell_dataset(input_path,
     print(f"Original cell voxels: {np.sum(single_cell > 0)}")
     print(f"Output shape: {output_shape} (Z×Y×X)")
     
-    base_name = Path(input_path).stem
+    base_name = "synt_img"
     
     # Generate volumes sequentially
     print("\n" + "="*60)
@@ -234,23 +237,24 @@ def generate_multicell_dataset(input_path,
         n_labeled_cells = len(np.unique(label_volume)) - 1  # Subtract background
         
         # Save both images and labels
-        image_path = images_dir / f"{base_name}_multicell_{i:04d}.tif"
-        label_path = labels_dir / f"{base_name}_multicell_{i:04d}_labels.tif"
+        images_dir_path = images_dir / f"{base_name}_multicell_{i:04d}.tif"
+        labels_dir_path = labels_dir / f"{base_name}_multicell_{i:04d}_labels.tif"
         
-        tifffile.imwrite(image_path, synthetic_volume)
-        tifffile.imwrite(label_path, label_volume)
+        tifffile.imwrite(images_dir_path, synthetic_volume)
+        tifffile.imwrite(labels_dir_path, label_volume)
         
         print(f"  Cells placed: {n_labeled_cells}")
         print(f"  Total foreground voxels: {foreground_voxels}")
         print(f"  Volume occupancy: {occupancy:.2f}%")
-        print(f"  Saved image: {image_path}")
-        print(f"  Saved labels: {label_path}")
+        print(f"  Saved image: {images_dir_path}")
+        print(f"  Saved labels: {labels_dir_path}")
     
     print(f"\n✓ Generated {n_volumes} synthetic multi-cell volumes with labels!")
     print(f"   Shape: {output_shape} (Z×Y×X)")
     print(f"   Images saved to: {images_dir}")
     print(f"   Labels saved to: {labels_dir}")
 
+    return images_dir_path, labels_dir_path
 
 if __name__ == "__main__":
     generate_multicell_dataset(
